@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: monitoring
+      POSTGRES_USER: db
+      POSTGRES_PASSWORD: hehe123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"        
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: userhehe@hehe.com
+      PGADMIN_DEFAULT_PASSWORD: hehe123
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+  backend:
+    build: ./backend
+    ports:
+      - "8001:8000"  
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: db
+      DB_PASSWORD: hehe123
+      DB_NAME: monitoring
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3000"  
+
+volumes:
+  pgadmin:
+  pgdata:
