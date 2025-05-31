@@ -1,11 +1,9 @@
+
 import psutil
 from sqlalchemy.orm import Session
-from models import Metric, Server  # twoje modele
+from models import SystemMetric
 from database import SessionLocal
 from datetime import datetime
-
-db_url = "postgresql://db:hehe123@db:5432/monitoring"
-
 
 def collect_and_store_metrics(server_id: int):
     db: Session = SessionLocal()
@@ -15,7 +13,7 @@ def collect_and_store_metrics(server_id: int):
     disk = psutil.disk_io_counters().write_bytes / 1024  # KB/s
     net = psutil.net_io_counters().bytes_sent / 1024     # KB/s
 
-    metric = Metric(
+    metric = SystemMetric(
         server_id=server_id,
         cpu_usage=cpu,
         ram_usage=ram,
