@@ -11,7 +11,7 @@ def collect_and_store_metrics(server_id: int):
     cpu = psutil.cpu_percent(interval=1)
     ram = psutil.virtual_memory().percent
     disk = psutil.disk_io_counters().write_bytes / 1024  # KB/s
-    net = psutil.net_io_counters().bytes_sent / 1024     # KB/s
+    net = psutil.net_io_counters().bytes_sent / 1024     
 
     metric = SystemMetric(
         server_id=server_id,

@@ -24,7 +24,7 @@ def update_metrics():
 
 
 if __name__ == '__main__':
-    start_http_server(8010)
+    start_http_server(8000)
     while True:
         update_metrics()
         time.sleep(10)
