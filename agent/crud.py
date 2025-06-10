@@ -1,3 +1,4 @@
+from prometheus_client import CollectorRegistry, make_asgi_app, multiprocess
 from sqlalchemy.orm import Session
 from models import Server, SystemMetric, MetricThreshold, MetricAlert
 from datetime import datetime
@@ -29,7 +30,6 @@ def delete_server(db: Session, server_id: int) -> bool:
     db.commit()
     return True
 
-# Metric CRUD
 
 def create_metric(db: Session, server_id: int, cpu: float, ram: float, disk: float, net: float) -> int:
     new_metric = SystemMetric(
@@ -47,3 +47,15 @@ def create_metric(db: Session, server_id: int, cpu: float, ram: float, disk: flo
 
 def get_metrics_for_server(db: Session, server_id: int):
     return db.query(SystemMetric).filter(SystemMetric.server_id == server_id).order_by(SystemMetric.timestamp.desc()).all()
+
+
+def get_all_metrics(db: Session):
+    return db.query(SystemMetric).all()
+
+def make_metrics_app():
+    registry = CollectorRegistry()
+    multiprocess.MultiProcessCollector(registry)
+    return make_asgi_app(registry=registry)
+
+
+

@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: monitoring
       POSTGRES_USER: db
       POSTGRES_PASSWORD: hehe123
+      POSTGRES_DB: monitoring
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -47,7 +47,7 @@ services:
   prometheus:
     image: prom/prometheus
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml     
     command:
@@ -65,5 +65,6 @@ volumes:
   pgadmin:
   pgdata:
   prometheus_data:
+  
     
    

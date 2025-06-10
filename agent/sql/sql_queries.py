@@ -13,7 +13,7 @@ VALUES (
   256.00,            -- net_io (KB)
   NOW()
 );'''
-# Lista aktywnych serwerów z ich aktualnym użyciem CPU
+# Zmiana statusu servera app-server-01 na inactive
 UPDATE_SERVER='''UPDATE servers
 SET status = 'inactive'
 WHERE name = 'app-server-01';

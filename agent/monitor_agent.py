@@ -3,8 +3,15 @@ from sqlalchemy.orm import Session
 from models import Metric, Server  # twoje modele
 from database import SessionLocal
 from datetime import datetime
+from prometheus_client import Gauge, Counter
+
 
 db_url = "postgresql://db:hehe123@db:5432/monitoring"
+
+CPU_USAGE = Gauge("custom_cpu_usage_percent", "CPU usage percentage")
+RAM_USAGE = Gauge("custom_ram_usage_percent", "RAM usage percentage")
+DISK_IO = Gauge("custom_disk_io_kbs", "Disk write in KB/s")
+NET_IO = Gauge("custom_net_io_kbs", "Network sent in KB/s")
 
 
 def collect_and_store_metrics(server_id: int):
@@ -14,6 +21,12 @@ def collect_and_store_metrics(server_id: int):
     ram = psutil.virtual_memory().percent
     disk = psutil.disk_io_counters().write_bytes / 1024  # KB/s
     net = psutil.net_io_counters().bytes_sent / 1024     # KB/s
+
+
+    CPU_USAGE.set(cpu)
+    RAM_USAGE.set(ram)
+    DISK_IO.set(disk)
+    NET_IO.set(net)
 
     metric = Metric(
         server_id=server_id,
@@ -26,3 +39,5 @@ def collect_and_store_metrics(server_id: int):
     db.add(metric)
     db.commit()
     db.close()
+
+    print(metric)

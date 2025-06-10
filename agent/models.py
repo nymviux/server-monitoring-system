@@ -64,10 +64,10 @@ class MetricAlert(Base):
 
     server = relationship("Server", back_populates="alerts")
 
-print(str(CreateTable(Server.__table__)))
-print(str(CreateTable(SystemMetric.__table__)))
-print(str(CreateTable(AutoScaleAction.__table__)))
-print(str(CreateTable(MetricThreshold.__table__)))
-print(str(CreateTable(MetricAlert.__table__)))
+# print(str(CreateTable(Server.__table__)))
+# print(str(CreateTable(SystemMetric.__table__)))
+# print(str(CreateTable(AutoScaleAction.__table__)))
+# print(str(CreateTable(MetricThreshold.__table__)))
+# print(str(CreateTable(MetricAlert.__table__)))
 
 

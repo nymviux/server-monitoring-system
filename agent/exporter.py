@@ -1,7 +1,7 @@
 from prometheus_client import start_http_server, Gauge
 from sqlalchemy.orm import Session
-from database import SessionLocal
-from models import SystemMetric
+from .database import SessionLocal
+from .models import SystemMetric
 import time
 
 cpu_gauge = Gauge('cpu_usage', 'CPU usage percentage')
