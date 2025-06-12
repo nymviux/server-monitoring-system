@@ -1,6 +1,12 @@
+
 import psutil
 from sqlalchemy.orm import Session
-from models import Metric, Server  # twoje modele
+from database import SessionLocal
+from datetime import datetime
+
+import psutil
+from sqlalchemy.orm import Session
+from models import SystemMetric, Server  # twoje modele
 from database import SessionLocal
 from datetime import datetime
 from prometheus_client import Gauge, Counter
@@ -16,6 +22,7 @@ NET_IO = Gauge("custom_net_io_kbs", "Network sent in KB/s")
 
 def collect_and_store_metrics(server_id: int):
     db: Session = SessionLocal()
+    print("Collecting metrics...")
 
     cpu = psutil.cpu_percent(interval=1)
     ram = psutil.virtual_memory().percent
@@ -28,7 +35,7 @@ def collect_and_store_metrics(server_id: int):
     DISK_IO.set(disk)
     NET_IO.set(net)
 
-    metric = Metric(
+    metric = SystemMetric(
         server_id=server_id,
         cpu_usage=cpu,
         ram_usage=ram,
@@ -39,5 +46,3 @@ def collect_and_store_metrics(server_id: int):
     db.add(metric)
     db.commit()
     db.close()
-
-    print(metric)

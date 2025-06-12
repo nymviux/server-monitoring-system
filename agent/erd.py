@@ -2,7 +2,7 @@ import subprocess
 import os
 
 def erd_png():
-    db_url = "postgresql://db:hehe123@localhost:5433/monitoring"
+    db_url = "postgresql://db:hehe123@db:5432/monitoring"
     dot_file = "erd.dot"
     png_file = "erd.png"
 
