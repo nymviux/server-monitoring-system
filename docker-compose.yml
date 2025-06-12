@@ -15,7 +15,9 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
-      retries: 5     
+      retries: 5 
+    networks:
+      monitoring:    
 
   pgadmin:
     image: dpage/pgadmin4
@@ -28,6 +30,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: hehe123
     volumes:
       - pgadmin:/var/lib/pgadmin
+    
 
   backend:
     build: ./agent
@@ -43,6 +46,8 @@ services:
       db:
         condition: service_healthy
     restart: always
+    networks:
+      monitoring:
 
   prometheus:
     image: prom/prometheus
@@ -55,16 +60,32 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      monitoring:
 
-  frontend:
-    build: ./frontend
+
+  grafana:
+    image: grafana/grafana:7.5.7
     ports:
-      - "3002:3000"  
+      - 3010:3000
+    environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana:/etc/grafana
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    networks:
+      monitoring:
 
 volumes:
   pgadmin:
   pgdata:
   prometheus_data:
-  
-    
-   
+  grafana-data:
+
+networks:
+  monitoring:
+

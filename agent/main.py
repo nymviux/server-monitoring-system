@@ -130,6 +130,7 @@ def list_metrics(server_id: int, db: Session = Depends(get_db)):
 @app.on_event("startup")
 def on_startup():
     scheduler.add_job(lambda: collect_and_store_metrics(server_id=1), 'interval', seconds=15)
+    scheduler.add_job(lambda: backup_job(), 'interval', seconds=120)
     scheduler.start()
 
 @app.on_event("shutdown")
