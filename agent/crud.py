@@ -31,14 +31,14 @@ def delete_server(db: Session, server_id: int) -> bool:
     return True
 
 
-def create_metric(db: Session, server_id: int, cpu: float, ram: float, disk: float, net: float) -> int:
+def create_metric(db: Session, server_id: int, cpu: float, ram: float, disk: float, net: float, timestamp: datetime) -> int:
     new_metric = SystemMetric(
         server_id=server_id,
         cpu_usage=cpu,
         ram_usage=ram,
         disk_io=disk,
         net_io=net,
-        timestamp=datetime.utcnow()
+        timestamp=timestamp
     )
     db.add(new_metric)
     db.commit()

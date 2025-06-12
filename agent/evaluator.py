@@ -16,7 +16,7 @@ def evaluate_thresholds(server_id: int, db: Session):
                 server_id=server_id,
                 metric_type=t.metric_type,
                 value=value,
-                triggered_at=datetime.utcnow()
+                triggered_at=datetime.utcnow().isoformat()
             )
             db.add(alert)
             db.commit()

@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from fastapi.responses import FileResponse
 from utils import backup_job
+import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -39,20 +40,6 @@ app.mount("/metrics", metrics_app)
 
 MY_COUNTER = Counter('my_counter', 'Description of my counter')
 
-# Expose metrics.
-# def app(environ, start_response):
-#     registry = CollectorRegistry()
-#     multiprocess.MultiProcessCollector(registry)
-#     data = generate_latest(registry)
-#     status = '200 OK'
-#     response_headers = [
-#         ('Content-type', CONTENT_TYPE_LATEST),
-#         ('Content-Length', str(len(data)))
-#     ]
-#     start_response(status, response_headers)
-#     return iter([data])
-
-
 
 def get_db():
     db = SessionLocal()
@@ -73,9 +60,22 @@ class MetricIn(BaseModel):
     ram_usage: float
     disk_io: float
     net_io: float
+    timestamp: str
     
 
+@app.post("/add-metric")
+def receive_metric(metric: MetricIn, db: Session = Depends(get_db)):
+    create_metric(
+        db=db,
+        server_id=metric.server_id,
+        cpu=metric.cpu_usage,
+        ram=metric.ram_usage,
+        disk=metric.disk_io,
+        net=metric.net_io,
+        timestamp=metric.timestamp
+    )
 
+    return {"status": "success"}
 
 @app.post("/servers")
 def add_server(server: ServerIn, db: Session = Depends(get_db)):
@@ -102,25 +102,6 @@ def remove_server(server_id: int, db: Session = Depends(get_db)):
     if not deleted:
         raise HTTPException(status_code=404, detail="Server not found")
     return {"status": "deleted"}
-
-# @app.post("/metrics")
-# def submit_metric(data: MetricIn, db: Session = Depends(get_db)):
-#     create_metric(db, data.server_id, data.cpu_usage, data.ram_usage, data.disk_io, data.net_io)
-#     return {"status": "ok"}
-
-# class MetricModel(BaseModel):
-
-
-# @app.get("/metrics")
-# def get_metrics(db: Session = Depends(get_db)) -> list[MetricModel]:
-#     metrics = get_all_metrics(db)
-#     if not metrics:
-#         raise HTTPException(status_code=404, detail="No metrics found.")
-#     print(metrics)
-#     return metrics
-
-
-
 
 
 @app.get("/metrics/{server_id}")

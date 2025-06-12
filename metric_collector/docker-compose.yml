@@ -1,0 +1,12 @@
+services:
+  metric_collector:
+    build: .
+    restart: always
+    networks:
+      - monitoring
+    environment:
+      SERVER_ID: ${SERVER_ID}
+
+networks:
+  monitoring:
+   external: true

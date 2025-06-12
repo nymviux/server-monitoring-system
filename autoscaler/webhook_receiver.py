@@ -1,5 +1,6 @@
 from flask import Flask, request
 import subprocess
+import os
 
 app = Flask(__name__)
 
@@ -8,17 +9,23 @@ def webhook():
     data = request.json
     print("Received alert:", data)
 
-    # Scale only if alert is "firing"
-    if data and any(a['status'] == 'firing' for a in data.get("alerts", [])):
-        # Count current running backend containers
+    # Check if Grafana alert is in 'alerting' state
+    if data and data.get("state") == "alerting":
+        # Count currently running metric_collector containers
         output = subprocess.check_output(
-            ["docker", "ps", "--filter", "name=backend", "--format", "{{.Names}}"]
+            ["docker", "ps", "--filter", "name=metric_collector", "--format", "{{.Names}}"]
         )
         running = len(output.decode().splitlines())
         new_count = running + 1
 
-        print(f"Scaling backend to {new_count} replicas")
-        subprocess.run(["docker", "compose", "up", "--scale", f"backend={new_count}", "-d", "-f ../docker-compose.yml"])
+        env = os.environ.copy()
+        env["SERVER_ID"] = str(new_count)
+
+        print(f"Scaling metric_collector to {new_count} replicas")
+        subprocess.run([
+            "docker", "compose", "--file", "../metric_collector/docker-compose.yml",
+            "up", "--scale", f"metric_collector={new_count}", "-d"
+        ], env=env)
         return "Scaled up", 200
 
     return "No action taken", 200

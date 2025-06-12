@@ -30,6 +30,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: hehe123
     volumes:
       - pgadmin:/var/lib/pgadmin
+    networks:
+      - monitoring
     
 
   backend:
@@ -79,6 +81,11 @@ services:
       - 8.8.4.4
     networks:
       monitoring:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
+
 
 volumes:
   pgadmin:
@@ -88,4 +95,4 @@ volumes:
 
 networks:
   monitoring:
-
+    external: true

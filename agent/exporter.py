@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from .database import SessionLocal
 from .models import SystemMetric
 import time
+import psutil
 
-cpu_gauge = Gauge('cpu_usage', 'CPU usage percentage')
-ram_gauge = Gauge('ram_usage', 'RAM usage percentage')
-disk_gauge = Gauge('disk_io', 'Disk IO (KB)')
-net_gauge = Gauge('net_io', 'Network IO (KB)')
+cpu = psutil.cpu_percent(interval=1)
+ram = psutil.virtual_memory().percent
+disk = psutil.disk_io_counters().write_bytes / 1024  # KB/s
+net = psutil.net_io_counters().bytes_sent / 1024 
 
 
 def update_metrics():
@@ -15,10 +16,10 @@ def update_metrics():
     metric = db.query(SystemMetric).order_by(SystemMetric.timestamp.desc()).first()
 
     if metric:
-        cpu_gauge.set(float(metric.cpu_usage))
-        ram_gauge.set(float(metric.ram_usage))
-        disk_gauge.set(float(metric.disk_io))
-        net_gauge.set(float(metric.net_io))
+        cpu.set(float(metric.cpu_usage))
+        ram.set(float(metric.ram_usage))
+        disk.set(float(metric.disk_io))
+        net.set(float(metric.net_io))
 
     db.close()
 
