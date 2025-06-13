@@ -1,10 +1,15 @@
 from prometheus_client import CollectorRegistry, make_asgi_app, multiprocess
 from sqlalchemy.orm import Session
-from models import Server, SystemMetric, MetricThreshold, MetricAlert
+from models import Server, SystemMetric
 from datetime import datetime
 
 
 def create_server(db: Session, name: str, ip_address: str) -> int:
+
+    found = db.query(Server).filter(Server.ip_address==ip_address).first()
+    if found:
+        return found.id
+    
     new_server = Server(name=name, ip_address=ip_address)
     db.add(new_server)
     db.commit()

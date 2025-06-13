@@ -4,16 +4,14 @@ from prometheus_client import make_asgi_app, REGISTRY, Counter
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 from database import Base, SessionLocal, engine
-from models import Server, SystemMetric, Base
+from models import Server, Base
 from collector import collect_and_store_metrics
-from evaluator import evaluate_thresholds
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from fastapi.responses import FileResponse
-from utils import backup_job
 import datetime
 
-from apscheduler.schedulers.background import BackgroundScheduler
+
 
 from crud import (
     create_server,
@@ -108,12 +106,5 @@ def remove_server(server_id: int, db: Session = Depends(get_db)):
 def list_metrics(server_id: int, db: Session = Depends(get_db)):
     return get_metrics_for_server(db, server_id)
 
-@app.on_event("startup")
-def on_startup():
-    scheduler.add_job(lambda: collect_and_store_metrics(server_id=1), 'interval', seconds=15)
-    scheduler.add_job(lambda: backup_job(), 'interval', seconds=120)
-    scheduler.start()
 
-@app.on_event("shutdown")
-def on_shutdown():
-    scheduler.shutdown()
+

@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-# Pobieramy dane z environment variables (które ustawiasz w docker-compose)
+# Pobieramy dane z environment variables ( w docker-compose)
 DB_USER = os.getenv("DB_USER", "db")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "hehe123")
 DB_HOST = os.getenv("DB_HOST", "db")  # Nazwa kontenera!

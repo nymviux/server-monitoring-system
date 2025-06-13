@@ -6,7 +6,8 @@ services:
       - monitoring
     environment:
       SERVER_ID: ${SERVER_ID}
-
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 networks:
   monitoring:
    external: true
